@@ -1,6 +1,8 @@
 /**
  * Audit Service
  * Core service for fetching and analyzing web pages
+ * 
+ * @module auditService
  */
 
 const axios = require('axios');
@@ -12,8 +14,27 @@ const REQUEST_TIMEOUT = 10000;
 
 /**
  * Performs a complete audit of a website URL
+ * Fetches the webpage, validates it's HTML, and extracts SEO metrics
+ * 
+ * @async
+ * @function auditUrl
  * @param {string} url - The URL to audit
- * @returns {object} - Audit results with all metrics
+ * @returns {Promise<Object>} Audit results containing:
+ *   - url {string} - The audited URL
+ *   - httpStatus {number} - HTTP status code
+ *   - responseTime {string} - Response time in milliseconds
+ *   - pageTitle {string} - Page title or 'No title found'
+ *   - metaDescription {string} - Meta description or 'No meta description found'
+ *   - h1Count {number} - Number of H1 tags
+ *   - imagesMissingAlt {number} - Number of images without alt text
+ *   - wordCount {number} - Approximate word count
+ *   - timestamp {string} - ISO timestamp of audit
+ * @throws {Error} With statusCode property for different error types:
+ *   - 400: Invalid URL format
+ *   - 415: URL does not return HTML
+ *   - 504: Request timed out
+ *   - 502: Unable to reach website (DNS/connection error)
+ *   - 500: Internal server error
  */
 async function auditUrl(url) {
   // Normalize URL first (add https:// if missing)
@@ -104,11 +125,23 @@ async function auditUrl(url) {
 
 /**
  * Parses HTML content and extracts SEO metrics
+ * Uses Cheerio to traverse DOM and extract relevant information
+ * 
+ * @function parseHtml
  * @param {string} html - The HTML content to parse
  * @param {string} url - The audited URL
  * @param {number} httpStatus - The HTTP status code
  * @param {number} responseTime - The response time in milliseconds
- * @returns {object} - Parsed metrics
+ * @returns {Object} Parsed metrics containing:
+ *   - url {string}
+ *   - httpStatus {number}
+ *   - responseTime {string}
+ *   - pageTitle {string}
+ *   - metaDescription {string}
+ *   - h1Count {number}
+ *   - imagesMissingAlt {number}
+ *   - wordCount {number}
+ *   - timestamp {string}
  */
 function parseHtml(html, url, httpStatus, responseTime) {
   const $ = cheerio.load(html);

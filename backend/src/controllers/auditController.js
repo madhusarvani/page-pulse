@@ -1,15 +1,24 @@
 /**
  * Audit Controller
  * Handles HTTP requests for website audits
+ * 
+ * @module auditController
  */
 
 const { auditUrl } = require('../services/auditService');
 
 /**
  * Controller for handling audit requests
- * @param {object} req - Express request object
- * @param {object} res - Express response object
- * @param {function} next - Express next middleware function
+ * Validates request body and delegates to audit service
+ * 
+ * @async
+ * @function auditController
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.url - The URL to audit
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {Promise<void>} Sends JSON response with audit results or error
  */
 async function auditController(req, res, next) {
   try {
